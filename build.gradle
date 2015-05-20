@@ -1,7 +1,44 @@
 apply plugin: 'java'
+apply plugin: 'application'
 
-sourceCompatibility = 1.5
+sourceCompatibility = 1.7
 version = '1.0'
+compileJava.options.encoding = 'UTF-8'
+mainClassName = 'gc.david.ev3.Main'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://oss.sonatype.org/content/groups/public"
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Test project example for leJOS EV3 0.9.0-beta',
+                'Implementation-Version': version,
+                'Main-Class': mainClassName
+    }
+    // note this builds one fat jar and it is not recommended for production use - just for illustration purpose
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
+configurations {
+    sshAntTask
+    provided
+}
+
+sourceSets {
+    main.compileClasspath += configurations.provided
+    test.compileClasspath += configurations.provided
+    test.runtimeClasspath += configurations.provided
+}
 
 repositories {
     mavenCentral()
@@ -11,16 +48,25 @@ repositories {
 }
 
 dependencies {
+    sshAntTask 'org.apache.ant:ant-jsch:1.9.4', 'jsch:jsch:0.1.29'
+    compile 'commons-collections:commons-collections:3.2'
     provided 'lejos:ev3classes:1.0'
     testCompile 'junit:junit:4.11'
 }
 
-configurations {
-    provided
+test {
+    systemProperties 'property': 'value'
 }
 
-sourceSets {
-    main.compileClasspath += configurations.provided
-    test.compileClasspath += configurations.provided
-    test.runtimeClasspath += configurations.provided
+task deployEV3 << {
+    ant.taskdef(name: 'scp',
+                classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+                classpath: configurations.sshAntTask.asPath)
+    ant.scp(todir: ev3_username + '@' + ev3_server + ':/home/lejos/programs',
+            password: ev3_password,
+            verbose: 'true') {
+        fileset(dir: './build/libs') {
+            include(name: '**/*.jar')
+        }
+    }
 }
