@@ -26,6 +26,11 @@ You can deploy your application on a Lego Mindstorm EV3 robot running leJOS by e
 
 If your robot is not connected via USB, but via WiFi then you must update the gradle.properties file to point to the correct IP and use the correct username/password.
 
+
+## Problems
+### Cannot find EV3 imports
+Go to Project Structure -> Libraries -> Add -> add /lib/ev3 folder
+
 # License
 Copyright 2015 David Aguiar
 
