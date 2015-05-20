@@ -4,6 +4,27 @@ Test project example for leJOS (Java for LEGO Mindstorms).
 
 Using leJOS EV3 0.9.0-beta.
 
+# How to run
+## Build 
+You need to:
+
+* Install gradle and have it in your path
+* Set the environment variable EV3_HOME to the directory where you extracted the leJOS distribution
+
+Afterwards, you need to run:
+
+```./gradlew clean build```
+
+By executing this command you build and test your leJOS Application. If everything runs successfully then you find the application JAR in the subfolder "build/libs".
+You can deploy this JAR on the robot.
+
+
+## Deploy 
+You can deploy your application on a Lego Mindstorm EV3 robot running leJOS by executing the following command:
+
+```./gradlew deployev3```
+
+If your robot is not connected via USB, but via WiFi then you must update the gradle.properties file to point to the correct IP and use the correct username/password.
 
 # License
 Copyright 2015 David Aguiar
